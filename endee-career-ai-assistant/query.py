@@ -9,10 +9,9 @@ vectorizer = TfidfVectorizer()
 vectors = vectorizer.fit_transform(docs)
 
 
-# 🔹 Format structured response
+# 🔹 Format response
 def format_response(text):
     parts = text.split(".")
-
     return {
         "role": parts[0].strip(),
         "skills": parts[1].strip() if len(parts) > 1 else "",
@@ -20,70 +19,50 @@ def format_response(text):
     }
 
 
-# 🔹 Roadmap generator
+# 🔹 Roadmap
 def generate_roadmap(role):
     roadmap = {
-        "Data Analyst": [
-            "Learn Excel & SQL",
-            "Learn Python (Pandas, NumPy)",
-            "Data Visualization (Power BI/Tableau)",
-            "Build projects",
-            "Apply for internships"
-        ],
-        "Data Scientist": [
-            "Learn Python",
-            "Statistics & Probability",
-            "Machine Learning",
-            "Deep Learning",
-            "Build ML projects"
-        ],
-        "Frontend Developer": [
-            "Learn HTML, CSS",
-            "JavaScript fundamentals",
-            "React.js",
-            "Build portfolio projects",
-            "Deploy websites"
-        ],
-        "Backend Developer": [
-            "Learn Node.js / Python",
-            "Database (SQL/NoSQL)",
-            "Build APIs",
-            "Authentication & security",
-            "Deploy backend"
-        ]
+        "Data Scientist": ["Learn Python", "Statistics", "Machine Learning", "Deep Learning", "Projects"],
+        "Data Analyst": ["Excel & SQL", "Python", "Visualization", "Projects"],
+        "Frontend Developer": ["HTML/CSS", "JavaScript", "React", "Projects"],
+        "Backend Developer": ["Node/Python", "Database", "API", "Deployment"]
     }
+    return roadmap.get(role, ["Learn basics", "Build projects"])
 
-    return roadmap.get(role, ["Start with basics", "Build projects", "Practice daily"])
+
+# 🔹 Smart Tags
+def generate_tags(role):
+    tags = {
+        "Data Scientist": ["🔥 High Demand", "💰 High Salary", "🧠 AI Role"],
+        "DevOps Engineer": ["🔥 High Demand", "⚙️ Infra", "💰 High Salary"],
+        "Frontend Developer": ["🎨 Creative", "🌐 Web", "🔥 Popular"],
+        "Backend Developer": ["⚙️ Server", "🧠 Logic", "🔥 Demand"]
+    }
+    return tags.get(role, ["📈 Growing Role"])
 
 
 # 🔹 Intent detection
 def detect_intent(query):
     q = query.lower()
 
-    if "roadmap" in q or "how to become" in q:
+    if "compare" in q or "vs" in q:
+        return "compare"
+    elif "roadmap" in q or "how to become" in q:
         return "roadmap"
     elif "suggest" in q or "recommend" in q:
         return "recommend"
+    elif "i know" in q:
+        return "skill_gap"
+    elif "i like" in q:
+        return "agent"
     else:
         return "search"
 
 
-# 🔹 Main AI function (UPGRADED)
-def search(query):
-    intent = detect_intent(query)
-
-    # 🔥 HANDLE GREETINGS
-    greetings = ["hi", "hello", "hlo", "hey"]
-    if query.lower().strip() in greetings:
-        return {
-            "type": "message",
-            "text": "Hello 👋 Ask me about careers, skills, or roadmaps!"
-        }
-
+# 🔹 Semantic Search
+def semantic_search(query):
     query_vec = vectorizer.transform([query])
     similarity = (vectors * query_vec.T).toarray().flatten()
-
-    # sort all results
     sorted_indices = similarity.argsort()[::-1]
 
     results = []
@@ -91,7 +70,6 @@ def search(query):
     for i in sorted_indices:
         score = round(similarity[i] * 100, 2)
 
-        # 🔥 FILTER LOW QUALITY RESULTS
         if score < 10:
             continue
 
@@ -101,30 +79,67 @@ def search(query):
             "role": formatted["role"],
             "skills": formatted["skills"],
             "description": formatted["description"],
-            "score": score
+            "score": score,
+            "tags": generate_tags(formatted["role"])
         })
 
-        # limit to top 3 GOOD matches
         if len(results) == 3:
             break
 
-    # 🔥 NO MATCH CASE
+    return results
+
+
+# 🔹 MAIN FUNCTION
+def search(query):
+    intent = detect_intent(query)
+
+    # 🔥 Greeting
+    if query.lower().strip() in ["hi", "hello", "hlo", "hey"]:
+        return {
+            "type": "message",
+            "text": "Hello 👋 Ask me about careers, skills, roadmap or comparisons!"
+        }
+
+    results = semantic_search(query)
+
     if len(results) == 0:
         return {
             "type": "message",
-            "text": "⚠️ I couldn't find a strong match. Try asking like 'skills for data analyst' or 'how to become data scientist'."
+            "text": "⚠️ Try asking clearly like 'skills for data analyst' or 'compare roles'."
         }
 
-    # 🔥 ROADMAP RESPONSE
+    # 🔥 1. COMPARISON
+    if intent == "compare":
+        return {
+            "type": "compare",
+            "items": results[:2]
+        }
+
+    # 🔥 2. ROADMAP
     if intent == "roadmap":
-        main_role = results[0]["role"]
+        role = results[0]["role"]
         return {
             "type": "roadmap",
-            "role": main_role,
-            "steps": generate_roadmap(main_role)
+            "role": role,
+            "steps": generate_roadmap(role)
         }
 
-    # 🔥 NORMAL RECOMMENDATION
+    # 🔥 3. SKILL GAP
+    if intent == "skill_gap":
+        return {
+            "type": "skill_gap",
+            "role": results[0]["role"],
+            "missing_skills": ["Machine Learning", "Statistics"]
+        }
+
+    # 🔥 4. AGENT SUGGESTION
+    if intent == "agent":
+        return {
+            "type": "agent",
+            "suggestions": results
+        }
+
+    # 🔥 DEFAULT
     return {
         "type": "recommendation",
         "results": results

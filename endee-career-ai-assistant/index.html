@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova | AI Career Intelligence Platform</title>
+    <title>CareerCompass | AI Career Intelligence Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -17,6 +17,9 @@
             background: #05050f;
             color: #ffffff;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         /* Animated Background */
@@ -74,6 +77,7 @@
             padding: 2rem;
             position: relative;
             z-index: 2;
+            flex: 1;
         }
 
         /* Glass Navbar */
@@ -91,6 +95,12 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo-icon {
@@ -124,10 +134,31 @@
             text-decoration: none;
             transition: color 0.3s;
             font-weight: 500;
+            cursor: pointer;
+            position: relative;
         }
 
         .nav-link:hover {
             color: #22c55e;
+        }
+
+        .nav-link.active {
+            color: #22c55e;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #22c55e;
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
 
         /* Hero Section */
@@ -409,7 +440,7 @@
             height: 300px;
         }
 
-        /* Filter Cards Premium */
+        /* Filter Section */
         .filter-section-premium {
             margin-bottom: 2rem;
         }
@@ -517,6 +548,21 @@
             margin-bottom: 0.75rem;
         }
 
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+
+        .tag {
+            padding: 0.2rem 0.6rem;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            color: #93c5fd;
+        }
+
         /* Stats Bar Premium */
         .stats-premium {
             display: flex;
@@ -528,6 +574,60 @@
             backdrop-filter: blur(10px);
             border-radius: 1rem;
             border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(5, 5, 15, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.1);
+        }
+
+        .footer-link:hover {
+            color: #22c55e;
+            transform: translateY(-3px);
+            border-color: rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .footer-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(34, 197, 94, 0.1);
+            color: #64748b;
+            font-size: 0.85rem;
         }
 
         /* Animations */
@@ -561,6 +661,9 @@
             .career-grid-premium {
                 grid-template-columns: 1fr;
             }
+            .footer-content {
+                gap: 1.5rem;
+            }
         }
 
         /* Scrollbar */
@@ -575,6 +678,35 @@
             background: #22c55e;
             border-radius: 3px;
         }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+        }
+
+        .scroll-top:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -586,32 +718,32 @@
     <div class="container">
         <!-- Navbar -->
         <div class="navbar">
-            <div class="logo">
-                <div class="logo-icon">✨</div>
-                <div class="logo-text">NOVA</div>
+            <div class="logo" onclick="scrollToTop()">
+                <div class="logo-icon">🧭</div>
+                <div class="logo-text">CareerCompass</div>
             </div>
             <div class="nav-links">
-                <a href="#" class="nav-link">Explore</a>
-                <a href="#" class="nav-link">Roadmaps</a>
-                <a href="#" class="nav-link">Community</a>
+                <a class="nav-link active" onclick="scrollToSection('explore')">Explore</a>
+                <a class="nav-link" onclick="scrollToSection('chat')">AI Assistant</a>
+                <a class="nav-link" onclick="scrollToSection('careers')">Careers</a>
             </div>
         </div>
 
         <!-- Hero -->
-        <div class="hero">
-            <div class="badge">✨ AI-Powered Career Intelligence</div>
+        <div class="hero" id="explore">
+            <div class="badge">🧭 AI-Powered Career Intelligence</div>
             <h1>Navigate Your Future<br>With Precision</h1>
             <p class="hero-subtitle">Discover your perfect career path with AI-driven insights, personalized roadmaps, and real-time guidance</p>
         </div>
 
         <!-- Premium Chat Panel -->
-        <div class="chat-panel">
+        <div class="chat-panel" id="chat">
             <div class="chat-header-premium">
                 <div class="chat-info">
-                    <div class="ai-avatar">🤖</div>
+                    <div class="ai-avatar">🧭</div>
                     <div class="chat-title-premium">
-                        <h3>Nova AI Assistant</h3>
-                        <p>Your personal career strategist</p>
+                        <h3>CareerCompass AI</h3>
+                        <p>Your personal career navigator</p>
                     </div>
                 </div>
                 <div class="status-badge">
@@ -622,12 +754,14 @@
             
             <div class="messages-container" id="messagesContainer">
                 <div class="message-premium bot">
-                    <div class="message-avatar-premium" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🤖</div>
+                    <div class="message-avatar-premium" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🧭</div>
                     <div class="message-bubble">
-                        ✨ Welcome to Nova! I'm your AI career strategist.<br><br>
+                        ✨ Welcome to CareerCompass! I'm your AI career navigator.<br><br>
                         I can help you with:<br>
                         • 📊 Personalized career roadmaps<br>
                         • 🎯 Skill gap analysis<br>
+                        • ⚖️ Compare different careers<br>
+                        • 🤖 AI-powered recommendations<br>
                         • 💰 Salary insights & negotiations<br>
                         • 📝 Interview preparation<br><br>
                         <strong>Ask me anything about your career journey! 🚀</strong>
@@ -637,7 +771,7 @@
             
             <div class="input-area-premium">
                 <div class="input-wrapper">
-                    <input type="text" id="chatInput" class="chat-input-premium" placeholder="Ask about roadmaps, skills, salaries, interviews...">
+                    <input type="text" id="chatInput" class="chat-input-premium" placeholder="Ask about roadmaps, compare roles, skill gaps, salaries...">
                 </div>
                 <button class="send-btn-premium" onclick="sendMessage()">
                     <span>✈️</span> Send
@@ -646,7 +780,7 @@
         </div>
 
         <!-- Filter Section -->
-        <div class="filter-section-premium">
+        <div class="filter-section-premium" id="careers">
             <div class="filter-scroll" id="filterScroll">
                 <div class="filter-chip active" data-filter="all">✨ All Roles</div>
                 <div class="filter-chip" data-filter="data">📊 Data & Analytics</div>
@@ -667,17 +801,41 @@
         <div id="careerGrid" class="career-grid-premium"></div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="https://github.com/Attrivishal" target="_blank" class="footer-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/vishalattri/" target="_blank" class="footer-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                LinkedIn
+            </a>
+        </div>
+        <div class="copyright">
+            © 2024 CareerCompass | Navigate Your Future with Confidence
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" onclick="scrollToTop()">↑</button>
+
     <script>
-        // Career Data
+        // Career Data with Tags
         const careers = [
-            { id: 1, title: "Data Analyst", icon: "📊", domain: "data", skills: ["Python", "SQL", "Excel", "Statistics", "Tableau"], description: "Transform raw data into actionable business insights.", salary: "$70k-110k", growth: "+25%", color: "#22c55e" },
-            { id: 2, title: "Data Scientist", icon: "🧠", domain: "data", skills: ["Python", "ML", "Deep Learning", "Statistics", "TensorFlow"], description: "Build predictive models using advanced AI/ML algorithms.", salary: "$100k-160k", growth: "+35%", color: "#3b82f6" },
-            { id: 3, title: "Frontend Dev", icon: "🎨", domain: "development", skills: ["React", "TypeScript", "Tailwind", "Next.js"], description: "Create stunning, responsive web experiences.", salary: "$75k-120k", growth: "+20%", color: "#a855f7" },
-            { id: 4, title: "Backend Dev", icon: "⚙️", domain: "development", skills: ["Node.js", "Python", "PostgreSQL", "Redis"], description: "Build scalable, secure server-side applications.", salary: "$80k-130k", growth: "+22%", color: "#ef4444" },
-            { id: 5, title: "DevOps Engineer", icon: "🚀", domain: "devops", skills: ["AWS", "K8s", "Docker", "Terraform"], description: "Automate deployment and infrastructure at scale.", salary: "$95k-150k", growth: "+30%", color: "#f59e0b" },
-            { id: 6, title: "Security Analyst", icon: "🔒", domain: "security", skills: ["Networking", "Pen Testing", "SIEM", "Python"], description: "Protect organizations from cyber threats.", salary: "$85k-135k", growth: "+32%", color: "#ec489a" },
-            { id: 7, title: "Product Manager", icon: "📱", domain: "product", skills: ["Strategy", "Analytics", "Agile", "Leadership"], description: "Drive product vision and go-to-market strategy.", salary: "$90k-140k", growth: "+18%", color: "#14b8a6" },
-            { id: 8, title: "UI/UX Designer", icon: "🎯", domain: "product", skills: ["Figma", "User Research", "Prototyping", "Design Systems"], description: "Create intuitive, user-centered digital experiences.", salary: "$70k-110k", growth: "+23%", color: "#8b5cf6" }
+            { id: 1, title: "Data Analyst", icon: "📊", domain: "data", tags: ["SQL", "Python", "Tableau", "Statistics"], skills: ["Python", "SQL", "Excel", "Statistics", "Tableau"], description: "Transform raw data into actionable business insights.", salary: "$70k-110k", growth: "+25%", color: "#22c55e" },
+            { id: 2, title: "Data Scientist", icon: "🧠", domain: "data", tags: ["Machine Learning", "Python", "Deep Learning", "AI"], skills: ["Python", "ML", "Deep Learning", "Statistics", "TensorFlow"], description: "Build predictive models using advanced AI/ML algorithms.", salary: "$100k-160k", growth: "+35%", color: "#3b82f6" },
+            { id: 3, title: "Frontend Dev", icon: "🎨", domain: "development", tags: ["React", "TypeScript", "CSS", "UI"], skills: ["React", "TypeScript", "Tailwind", "Next.js"], description: "Create stunning, responsive web experiences.", salary: "$75k-120k", growth: "+20%", color: "#a855f7" },
+            { id: 4, title: "Backend Dev", icon: "⚙️", domain: "development", tags: ["Node.js", "Python", "APIs", "Databases"], skills: ["Node.js", "Python", "PostgreSQL", "Redis"], description: "Build scalable, secure server-side applications.", salary: "$80k-130k", growth: "+22%", color: "#ef4444" },
+            { id: 5, title: "DevOps Engineer", icon: "🚀", domain: "devops", tags: ["AWS", "K8s", "Docker", "CI/CD"], skills: ["AWS", "K8s", "Docker", "Terraform"], description: "Automate deployment and infrastructure at scale.", salary: "$95k-150k", growth: "+30%", color: "#f59e0b" },
+            { id: 6, title: "Security Analyst", icon: "🔒", domain: "security", tags: ["Networking", "Pen Testing", "SIEM", "Python"], skills: ["Networking", "Pen Testing", "SIEM", "Python"], description: "Protect organizations from cyber threats.", salary: "$85k-135k", growth: "+32%", color: "#ec489a" },
+            { id: 7, title: "Product Manager", icon: "📱", domain: "product", tags: ["Strategy", "Analytics", "Agile", "Leadership"], skills: ["Strategy", "Analytics", "Agile", "Leadership"], description: "Drive product vision and go-to-market strategy.", salary: "$90k-140k", growth: "+18%", color: "#14b8a6" },
+            { id: 8, title: "UI/UX Designer", icon: "🎯", domain: "product", tags: ["Figma", "Research", "Prototyping", "Design"], skills: ["Figma", "User Research", "Prototyping", "Design Systems"], description: "Create intuitive, user-centered digital experiences.", salary: "$70k-110k", growth: "+23%", color: "#8b5cf6" }
         ];
 
         let currentFilter = 'all';
@@ -691,7 +849,34 @@
             follower.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
         });
 
-        // Render careers
+        // Navigation Functions
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Scroll to top button visibility
+        window.addEventListener('scroll', () => {
+            const scrollBtn = document.querySelector('.scroll-top');
+            if (window.scrollY > 300) {
+                scrollBtn.classList.add('visible');
+            } else {
+                scrollBtn.classList.remove('visible');
+            }
+        });
+
+        // Render careers with Tags
         function renderCareers() {
             const filtered = currentFilter === 'all' ? careers : careers.filter(c => c.domain === currentFilter);
             const grid = document.getElementById('careerGrid');
@@ -705,6 +890,9 @@
                         <div class="domain-badge">${career.domain}</div>
                     </div>
                     <div class="role-title-premium">${career.title}</div>
+                    <div class="tags-container">
+                        ${career.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
                     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0;">
                         ${career.skills.slice(0, 3).map(s => `<span style="background: rgba(34,197,94,0.15); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem;">${s}</span>`).join('')}
                         ${career.skills.length > 3 ? `<span style="background: rgba(34,197,94,0.15); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.75rem;">+${career.skills.length - 3}</span>` : ''}
@@ -718,7 +906,7 @@
             `).join('');
         }
 
-        // Chat functions
+        // Chat functions (keeping existing functionality)
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const question = input.value.trim();
@@ -728,26 +916,95 @@
             input.value = '';
             showTyping();
 
-            setTimeout(() => {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/ask?question=${encodeURIComponent(question)}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    signal: AbortSignal.timeout(5000)
+                });
+
+                if (!response.ok) throw new Error('Backend error');
+
+                const data = await response.json();
                 removeTyping();
-                const response = generateSmartResponse(question);
-                addMessage(response, 'bot', true);
-            }, 800);
+
+                // All handlers
+                if (data.type === "message") {
+                    addMessage(data.text, 'bot', true);
+                    return;
+                }
+                if (data.type === "compare") {
+                    let html = "<b>⚖️ Career Comparison</b><br><br>";
+                    data.items.forEach(r => {
+                        html += `<div style="margin-bottom:15px; padding:10px; background:rgba(34,197,94,0.1); border-radius:10px;">
+                            <b>${r.role}</b><br>Skills: ${r.skills}<br>${r.description || ''}
+                            ${r.tags ? `<br>Tags: ${r.tags.join(" ")}` : ''}
+                        </div>`;
+                    });
+                    addMessage(html, 'bot', true);
+                    return;
+                }
+                if (data.type === "skill_gap") {
+                    let html = `<b>📉 Skill Gap Analysis for ${data.role}</b><br><br><strong>Missing Skills:</strong><br>`;
+                    data.missing_skills.forEach(s => html += `• ${s}<br>`);
+                    if (data.recommendations) {
+                        html += `<br><strong>📚 Recommendations:</strong><br>`;
+                        data.recommendations.forEach(r => html += `• ${r}<br>`);
+                    }
+                    addMessage(html, 'bot', true);
+                    return;
+                }
+                if (data.type === "agent") {
+                    let html = "<b>🤖 AI-Powered Career Suggestions</b><br><br>";
+                    data.suggestions.forEach(r => {
+                        html += `<div style="margin-bottom:10px; padding:8px; background:rgba(59,130,246,0.1); border-radius:8px;">
+                            <b>${r.role}</b><br>${r.match_reason || r.description || ''}
+                            ${r.tags ? `<br><span style="font-size:0.8rem;">Tags: ${r.tags.join(" ")}</span>` : ''}
+                        </div>`;
+                    });
+                    addMessage(html, 'bot', true);
+                    return;
+                }
+                if (data.type === 'roadmap' && data.steps) {
+                    let html = `<strong>🧭 Roadmap for ${data.role || 'your career'}</strong><br><br>`;
+                    data.steps.forEach((step, i) => html += `${i+1}. ${step}<br>`);
+                    addMessage(html, 'bot', true);
+                    return;
+                }
+                if (data.type === 'recommendation' && data.results) {
+                    let html = '<strong>🎯 Recommended Roles</strong><br><br>';
+                    data.results.forEach(r => {
+                        html += `<div style="margin-bottom:12px; padding:8px; background:rgba(34,197,94,0.1); border-radius:8px;">
+                            <b>${r.role}</b><br>Skills: ${r.skills}<br>Match: ${r.score}%<br>
+                            ${r.tags ? `Tags: ${r.tags.join(" ")}` : ''}
+                        </div>`;
+                    });
+                    addMessage(html, 'bot', true);
+                    return;
+                }
+                if (data.answer) {
+                    addMessage(data.answer, 'bot');
+                    return;
+                }
+                addMessage("I received your question! Try asking about roadmaps, comparing careers, or skill gaps.", 'bot');
+                
+            } catch (error) {
+                removeTyping();
+                const fallbackResponse = generateSmartResponse(question);
+                addMessage(fallbackResponse, 'bot', true);
+            }
         }
 
         function addMessage(text, type, isHtml = false) {
             const container = document.getElementById('messagesContainer');
             const div = document.createElement('div');
             div.className = `message-premium ${type}`;
-            
-            const avatar = type === 'user' ? '👤' : '🤖';
+            const avatar = type === 'user' ? '👤' : '🧭';
             const avatarGradient = type === 'user' ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'linear-gradient(135deg, #3b82f6, #2563eb)';
-            
             div.innerHTML = `
                 <div class="message-avatar-premium" style="background: ${avatarGradient};">${avatar}</div>
                 <div class="message-bubble">${isHtml ? text : text.replace(/\n/g, '<br>')}</div>
             `;
-            
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
@@ -758,11 +1015,9 @@
             typingDiv.className = 'message-premium bot';
             typingDiv.id = 'typingIndicator';
             typingDiv.innerHTML = `
-                <div class="message-avatar-premium" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🤖</div>
+                <div class="message-avatar-premium" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🧭</div>
                 <div class="message-bubble">
-                    <div class="typing-premium">
-                        <span></span><span></span><span></span>
-                    </div>
+                    <div class="typing-premium"><span></span><span></span><span></span></div>
                 </div>
             `;
             container.appendChild(typingDiv);
@@ -776,57 +1031,45 @@
 
         function generateSmartResponse(question) {
             const q = question.toLowerCase();
-            
-            if (q.includes('roadmap') || q.includes('path') || q.includes('learn')) {
+            if (q.includes('compare') || (q.includes('vs') && q.includes('and'))) {
+                return `<b>⚖️ Career Comparison</b><br><br>
+                <div style="margin-bottom:10px; padding:8px; background:rgba(34,197,94,0.1); border-radius:8px;">
+                    <b>Data Analyst vs Data Scientist</b><br>
+                    <strong>Data Analyst:</strong> SQL, Python, Statistics, Tableau<br>
+                    <strong>Data Scientist:</strong> ML, Deep Learning, Python, TensorFlow<br>
+                    <strong>Key Difference:</strong> Data Analysts focus on insights, Data Scientists build predictive models
+                </div>`;
+            }
+            if (q.includes('skill gap') || q.includes('missing skills')) {
+                return `<b>📉 Skill Gap Analysis</b><br><br>
+                <strong>For Data Scientist Role:</strong><br>
+                • Deep Learning frameworks (TensorFlow, PyTorch)<br>
+                • MLOps & Model Deployment<br>
+                • Cloud Platforms (AWS SageMaker)<br><br>
+                <strong>📚 Recommendations:</strong><br>
+                • Take Andrew Ng's Deep Learning Specialization<br>
+                • Build 3-5 ML projects for portfolio<br>
+                • Get AWS Certified`;
+            }
+            if (q.includes('roadmap') || q.includes('path')) {
                 if (q.includes('data') || q.includes('analyst')) {
-                    return `📊 <strong>Data Analyst Roadmap</strong><br><br>
+                    return `<strong>📊 Data Analyst Roadmap</strong><br><br>
                     <strong>Step 1:</strong> Master SQL & Excel (2-3 months)<br>
                     <strong>Step 2:</strong> Learn Python (Pandas, NumPy) (2 months)<br>
                     <strong>Step 3:</strong> Data Visualization (Tableau/Power BI) (1-2 months)<br>
                     <strong>Step 4:</strong> Statistics & A/B Testing (2 months)<br>
                     <strong>Step 5:</strong> Build portfolio projects (ongoing)<br>
-                    <strong>Step 6:</strong> Apply for entry-level positions 🎯`;
-                } else if (q.includes('frontend')) {
-                    return `🎨 <strong>Frontend Developer Roadmap</strong><br><br>
-                    <strong>Phase 1:</strong> HTML5, CSS3, JavaScript fundamentals (2 months)<br>
-                    <strong>Phase 2:</strong> React.js + State Management (2-3 months)<br>
-                    <strong>Phase 3:</strong> Tailwind CSS, Responsive Design (1 month)<br>
-                    <strong>Phase 4:</strong> Next.js, TypeScript (2 months)<br>
-                    <strong>Phase 5:</strong> Build 3-5 portfolio projects<br>
-                    <strong>Phase 6:</strong> Open source contributions & job hunt 🚀`;
+                    <strong>Tags:</strong> #SQL #Python #Tableau #Statistics`;
                 }
-                return `🎯 I can create a personalized roadmap! Which role interests you?<br><br>
+                return `<strong>🎯 Career Roadmap</strong><br><br>I can create a detailed roadmap! Which role interests you?<br>
                 Available: Data Analyst, Data Scientist, Frontend Dev, Backend Dev, DevOps, Security, Product Manager, UI/UX Designer`;
             }
-            
-            if (q.includes('salary')) {
-                return `💰 <strong>Salary Ranges (US Average)</strong><br><br>
-                • Data Analyst: $70,000 - $110,000<br>
-                • Data Scientist: $100,000 - $160,000<br>
-                • Frontend Developer: $75,000 - $120,000<br>
-                • Backend Developer: $80,000 - $130,000<br>
-                • DevOps Engineer: $95,000 - $150,000<br>
-                • Security Analyst: $85,000 - $135,000<br>
-                • Product Manager: $90,000 - $140,000<br>
-                • UI/UX Designer: $70,000 - $110,000`;
-            }
-            
-            if (q.includes('skill') || q.includes('learn')) {
-                return `🎯 <strong>Top Skills by Domain 2025</strong><br><br>
-                <strong>📊 Data:</strong> Python, SQL, Machine Learning, Statistics, Tableau<br>
-                <strong>💻 Development:</strong> React, TypeScript, Node.js, Python, Databases<br>
-                <strong>⚙️ DevOps:</strong> AWS, Kubernetes, Docker, Terraform, CI/CD<br>
-                <strong>🔒 Security:</strong> Networking, Ethical Hacking, SIEM, Cloud Security<br>
-                <strong>🎨 Product:</strong> Product Strategy, User Research, Analytics, Agile`;
-            }
-            
-            return `✨ I'm here to help! Ask me about:<br><br>
-            • 📊 Career roadmaps (e.g., "roadmap for data analyst")<br>
-            • 💰 Salary insights (e.g., "salary for frontend developer")<br>
-            • 🎯 Skills to learn (e.g., "skills for 2025")<br>
-            • 📝 Interview preparation<br>
-            • 🔄 Career transitions<br><br>
-            <strong>What would you like to explore today?</strong> 🚀`;
+            return `✨ <strong>How can I help?</strong><br><br>Try asking me:<br><br>
+            • <strong>"Compare Data Analyst vs Data Scientist"</strong> - Career comparison<br>
+            • <strong>"Skill gap for DevOps Engineer"</strong> - Missing skills analysis<br>
+            • <strong>"Roadmap for Frontend Developer"</strong> - Learning path<br>
+            • <strong>"Recommend careers for me"</strong> - AI suggestions<br><br>
+            What would you like to explore? 🚀`;
         }
 
         function openCareerModal(id) {
@@ -837,10 +1080,11 @@
                 removeTyping();
                 addMessage(`✨ <strong>${career.title}</strong><br><br>
                 📝 ${career.description}<br><br>
+                🏷️ <strong>Tags:</strong> ${career.tags.map(t => `#${t}`).join(' ')}<br>
                 🛠️ <strong>Key Skills:</strong> ${career.skills.join(', ')}<br>
                 💰 <strong>Salary Range:</strong> ${career.salary}<br>
                 📈 <strong>Job Growth:</strong> ${career.growth}<br><br>
-                🚀 Would you like me to create a detailed learning roadmap for this role?`, 'bot', true);
+                🚀 Would you like me to create a detailed learning roadmap or analyze skill gaps for this role?`, 'bot', true);
             }, 800);
         }
 
