@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AI Career Assistant | Smart Career Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #0b1120 0%, #0a0f1c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* animated background glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glass-card {
+            max-width: 750px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            border-radius: 2.5rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(34, 197, 94, 0.05) inset;
+            padding: 2rem 1.8rem 2.2rem;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #E0F2FE 0%, #86efac 80%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .subhead {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            border-left: 3px solid #22c55e;
+            padding-left: 12px;
+            margin-top: 6px;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            background: rgba(2, 6, 23, 0.5);
+            border-radius: 2rem;
+            padding: 6px;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            transition: all 0.2s;
+        }
+
+        .input-group:focus-within {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1rem;
+            color: #f1f5f9;
+            font-weight: 500;
+            outline: none;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: #5b6e8c;
+            font-weight: 400;
+        }
+
+        button {
+            background: linear-gradient(105deg, #22c55e 0%, #16a34a 100%);
+            border: none;
+            padding: 0 28px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+        }
+
+        button:hover {
+            background: linear-gradient(105deg, #2bcf68 0%, #15803d 100%);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* suggestion pills */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .suggestion-chip {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: #cbd5e6;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .suggestion-chip:hover {
+            background: #22c55e20;
+            border-color: #22c55e;
+            color: #bbf7d0;
+            transform: translateY(-2px);
+        }
+
+        /* result card */
+        .result-container {
+            background: rgba(2, 6, 23, 0.5);
+            border-radius: 1.5rem;
+            margin-top: 20px;
+            padding: 1.6rem;
+            border-left: 4px solid #22c55e;
+            transition: all 0.25s;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #86efac;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #result {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-weight: 450;
+        }
+
+        .loader {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            background: #0f172a80;
+            padding: 12px 20px;
+            border-radius: 60px;
+            width: fit-content;
+        }
+
+        .loader.show {
+            display: flex;
+        }
+
+        .dot-spinner {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(0.8);}
+            100% { opacity: 1; transform: scale(1.2);}
+        }
+
+        .error-message {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+            padding: 12px;
+            border-radius: 1rem;
+            border-left: 3px solid #ef4444;
+        }
+
+        .footer-note {
+            margin-top: 28px;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #4b556b;
+            border-top: 1px solid #1e293b;
+            padding-top: 18px;
+        }
+
+        @media (max-width: 550px) {
+            .glass-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+            button {
+                padding: 0 20px;
+            }
+            .input-group {
+                flex-direction: column;
+                background: transparent;
+                border: none;
+                gap: 12px;
+            }
+            input {
+                background: #0f172a;
+                border-radius: 60px;
+                border: 1px solid #334155;
+                padding: 12px 18px;
+            }
+            .input-group:focus-within {
+                box-shadow: none;
+            }
+            button {
+                justify-content: center;
+                padding: 12px;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #22c55e30, #15803d20);
+            border-radius: 12px;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <h1>
+            <span>🤖</span> AI Career Assistant
+        </h1>
+        <div style="background: #0f212e; border-radius: 40px; padding: 5px 12px; font-size: 12px; color: #7dd3fc;">
+            <span>⚡ real-time advice</span>
+        </div>
+    </div>
+    <div class="subhead">
+        Your intelligent companion for resumes, interviews, skill paths & career growth
+    </div>
+
+    <div class="suggestions" id="suggestionBar">
+        <div class="suggestion-chip" data-q="How to write a standout resume for tech roles?">📄 Resume tips</div>
+        <div class="suggestion-chip" data-q="What skills are in demand for AI engineers in 2025?">🚀 AI skills 2025</div>
+        <div class="suggestion-chip" data-q="How to answer 'Tell me about yourself' in an interview?">🎤 Interview question</div>
+        <div class="suggestion-chip" data-q="Best career path for a data analyst?">📊 Data career</div>
+        <div class="suggestion-chip" data-q="How to negotiate a higher salary offer?">💰 Salary negotiation</div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="question" placeholder="e.g., How to switch from marketing to product management?" autocomplete="off" />
+        <button id="askBtn">
+            <span>✨</span> Ask Assistant
+        </button>
+    </div>
+
+    <!-- loading indicator -->
+    <div id="loader" class="loader">
+        <div class="dot-spinner"></div>
+        <span style="color: #a0afc3; font-size: 0.85rem;">AI is crafting your career insight...</span>
+    </div>
+
+    <div id="resultContainer" class="result-container" style="display: none;">
+        <div class="result-header">
+            <span>💡</span> Career insight
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <div class="footer-note">
+        ✨ Powered by intelligent career knowledge • Ask anything about jobs, growth, or professional development
+    </div>
+</div>
+
+<script>
+    // --- DOM elements
+    const questionInput = document.getElementById('question');
+    const askButton = document.getElementById('askBtn');
+    const resultDiv = document.getElementById('result');
+    const resultContainer = document.getElementById('resultContainer');
+    const loaderDiv = document.getElementById('loader');
+
+    // Helper: show/hide loader & reset error styles
+    function setLoading(isLoading) {
+        if (isLoading) {
+            loaderDiv.classList.add('show');
+            resultContainer.style.display = 'none';
+        } else {
+            loaderDiv.classList.remove('show');
+        }
+    }
+
+    function displayAnswer(answerText, isError = false) {
+        resultContainer.style.display = 'block';
+        if (isError) {
+            resultDiv.innerHTML = `<div class="error-message">⚠️ ${escapeHtml(answerText)}</div>`;
+            // change header style temporarily
+            const headerSpan = document.querySelector('.result-header span');
+            if (headerSpan) headerSpan.innerHTML = '⚠️';
+        } else {
+            // Beautify answer: simple formatting, preserve line breaks
+            let formatted = escapeHtml(answerText).replace(/\n/g, '<br>');
+            // highlight keywords (basic)
+            formatted = formatted.replace(/\b(resume|interview|skills|career|salary|job|role|path|growth)\b/gi, match => `<span class="highlight">${match}</span>`);
+            resultDiv.innerHTML = formatted;
+            const headerSpan = document.querySelector('.result-header span');
+            if (headerSpan && !isError) headerSpan.innerHTML = '💡';
+        }
+        // smooth scroll to result
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // simple escape to avoid injection
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // main ask function with error handling & offline fallback / mock response when API is unreachable
+    // This version uses the original fetch to http://127.0.0.1:8000/ask but adds fallback mechanism
+    // to keep UI functional even if backend is not running. Enhanced UX: show friendly message.
+    async function askQuestion(questionRaw) {
+        if (!questionRaw || questionRaw.trim() === '') {
+            displayAnswer('🤔 Please enter a career question first — I’m here to help!', false);
+            return;
+        }
+
+        const trimmedQuestion = questionRaw.trim();
+        setLoading(true);
+
+        // encode URI component for safe URL
+        const encodedQ = encodeURIComponent(trimmedQuestion);
+        const apiUrl = `http://127.0.0.1:8000/ask?question=${encodedQ}`;
+
+        // Set timeout to avoid hanging (8 seconds)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                signal: controller.signal,
+                headers: { 'Accept': 'application/json' }
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                // if status not ok (e.g., 404, 500)
+                throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            // check if data.answer exists and is string
+            let answerText = data?.answer;
+            if (!answerText && typeof answerText !== 'string') {
+                answerText = "✅ I've received your query, but the response format is unexpected. Try rephrasing?";
+            }
+            displayAnswer(answerText, false);
+        } catch (error) {
+            clearTimeout(timeoutId);
+            console.warn("API fetch error:", error);
+
+            // Enhanced offline / demo mode: provide intelligent career answers without backend
+            // So the UI still feels alive and helpful!
+            const fallbackAnswer = generateSmartFallback(trimmedQuestion);
+            displayAnswer(fallbackAnswer + "\n\n✨ (Note: Using offline knowledge mode — connect your backend at http://127.0.0.1:8000 for full AI power.)", false);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Smart fallback generator - career intelligence without real API
+    // This makes assistant useful even without backend connection
+    function generateSmartFallback(query) {
+        const q = query.toLowerCase();
+
+        // Resume & CV
+        if (q.includes('resume') || q.includes('cv') || q.includes('curriculum')) {
+            return "📄 **Resume Tips**:\n• Use action verbs (developed, led, optimized).\n• Tailor each resume to the job description.\n• Include quantifiable achievements (e.g., 'Increased sales by 30%').\n• Keep format clean, 1 page for < 10 years experience.\n• Add a professional summary (3 lines max).";
+        }
+        // interview
+        if (q.includes('interview') || q.includes('tell me about yourself') || q.includes('behavioral')) {
+            return "🎤 **Ace Your Interview**:\n1. STAR method for behavioral questions (Situation, Task, Action, Result).\n2. Research the company values and recent news.\n3. Prepare 3-5 strong questions for the interviewer.\n4. Practice 'Tell me about yourself' — focus on relevant experience & passion.\n5. Send a personalized thank-you email within 24h.";
+        }
+        // salary negotiation
+        if (q.includes('salary') || q.includes('negotiate') || q.includes('offer')) {
+            return "💰 **Salary Negotiation**\n• Always research market range (levels.fyi, Glassdoor).\n• Delay giving numbers first: ask 'What's the budgeted range?'\n• Consider total comp: bonus, equity, benefits.\n• Express enthusiasm, then negotiate firmly but politely.\n• If remote, factor cost-of-living adjustments.";
+        }
+        // skills / tech / AI
+        if ((q.includes('skill') || q.includes('learning') || q.includes('ai engineer') || q.includes('in demand')) && (q.includes('2025') || q.includes('tech'))) {
+            return "🚀 **Top Skills for 2025**:\n• AI/ML: Prompt engineering, LLM fine-tuning, RAG architectures.\n• Cloud: AWS/Azure/GCP expertise.\n• Cybersecurity & Data privacy.\n• Full-stack with TypeScript, React, Node.js.\n• Soft skills: adaptability, cross-functional communication.";
+        }
+        // Data career path
+        if (q.includes('data analyst') || (q.includes('data') && q.includes('career'))) {
+            return "📊 **Data Career Roadmap**:\n1. Master SQL, Python (pandas), and data visualization (Tableau/Power BI).\n2. Build portfolio with real-world datasets (Kaggle).\n3. Learn statistics & A/B testing.\n4. Advance to Data Scientist or Analytics Engineer with cloud tools (dbt, Snowflake).\n5. Certifications: Google Data Analytics, AWS Data Analytics.";
+        }
+        // career switch / pivot
+        if (q.includes('switch') || q.includes('transition') || q.includes('change career')) {
+            return "🔄 **Career Transition Strategy**:\n• Identify transferable skills (communication, project management).\n• Take targeted courses/certifications.\n• Network with professionals in target field (LinkedIn).\n• Update resume to highlight relevant achievements.\n• Consider freelance or side projects to build credibility.";
+        }
+        // leadership / promotion
+        if (q.includes('promotion') || q.includes('leadership') || q.includes('senior')) {
+            return "🏆 **Getting Promoted**:\n• Document your wins and impact metrics.\n• Initiate strategic projects beyond your role.\n• Communicate career goals with manager during 1:1s.\n• Seek mentorship & sponsorship.\n• Develop executive presence and visibility.";
+        }
+        // general motivational / fallback
+        return "🌟 **AI Career Assistant**\nI'm here to help with resumes, interview prep, skill development, salary negotiation, and career pivots.\n\n💡 Try asking:\n• 'How to prepare for product management interviews?'\n• 'What programming languages for 2025?'\n• 'How to build a personal brand?'\n\n(Note: For full AI model responses, ensure your local backend server is running at http://127.0.0.1:8000)";
+    }
+
+    // Event binding & suggestion chips
+    function init() {
+        askButton.addEventListener('click', () => {
+            const q = questionInput.value;
+            askQuestion(q);
+        });
+
+        // Enter key press
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                askQuestion(questionInput.value);
+            }
+        });
+
+        // suggestions: populate input and auto ask (or just fill)
+        const chips = document.querySelectorAll('.suggestion-chip');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const suggestedQ = chip.getAttribute('data-q');
+                if (suggestedQ) {
+                    questionInput.value = suggestedQ;
+                    // optionally auto-submit for smoother UX
+                    askQuestion(suggestedQ);
+                }
+            });
+        });
+
+        // subtle focus effect
+        questionInput.focus();
+    }
+
+    init();
+</script>
+</body>
+</html>
